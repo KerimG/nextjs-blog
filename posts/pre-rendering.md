@@ -4,7 +4,7 @@ date: '2020-01-01'
 ---
 
 
-```
+```js
 useEffect(() => {
   // Remove the server-side injected CSS.
   const jssStyles = document.querySelector('#jss-server-side');
