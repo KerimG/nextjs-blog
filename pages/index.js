@@ -1,9 +1,10 @@
-import Head from "next/head";
-import Link from "next/link";
-import Date from "../components/date";
-import Layout, { siteTitle } from "../components/layout";
-import { getSortedPostsData } from "../lib/posts";
-import utilStyles from "../styles/utils.module.css";
+import Head from 'next/head';
+import Link from 'next/link';
+import { signIn, signOut, useSession } from 'next-auth/client';
+import Date from '../components/date';
+import Layout, { siteTitle } from '../components/layout';
+import { getSortedPostsData } from '../lib/posts';
+import utilStyles from '../styles/utils.module.css';
 
 export async function getStaticProps() {
   const allPostsData = getSortedPostsData();
@@ -15,26 +16,45 @@ export async function getStaticProps() {
 }
 
 export default function Home({ allPostsData }) {
+  const [session, loading] = useSession();
+
   return (
-    <Layout home>
-      <Head>…</Head>
-      <section className={utilStyles.headingMd}>…</section>
-      <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
-        <h2 className={utilStyles.headingLg}>Blog</h2>
-        <ul className={utilStyles.list}>
-          {allPostsData.map(({ id, date, title }) => (
-            <li className={utilStyles.listItem} key={id}>
-              <Link href={`/posts/${id}`}>
-                <a>{title}</a>
-              </Link>
-              <br />
-              <small className={utilStyles.lightText}>
-                <Date dateString={date} />
-              </small>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </Layout>
+    <>
+      {!session && (
+        <>
+          Not signed in <br />
+          <button onClick={signIn}>Sign in</button>
+        </>
+      )}
+      {session && (
+        <>
+          Signed in as {session.user.email} <br />
+          <button onClick={signOut}>Sign out</button>
+        </>
+      )}
+    </>
   );
+
+  // return (
+  //   <Layout home>
+  //     <Head>…</Head>
+  //     <section className={utilStyles.headingMd}>…</section>
+  //     <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
+  //       <h2 className={utilStyles.headingLg}>Blog</h2>
+  //       <ul className={utilStyles.list}>
+  //         {allPostsData.map(({ id, date, title }) => (
+  //           <li className={utilStyles.listItem} key={id}>
+  //             <Link href={`/posts/${id}`}>
+  //               <a>{title}</a>
+  //             </Link>
+  //             <br />
+  //             <small className={utilStyles.lightText}>
+  //               <Date dateString={date} />
+  //             </small>
+  //           </li>
+  //         ))}
+  //       </ul>
+  //     </section>
+  //   </Layout>
+  // );
 }
